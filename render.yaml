@@ -1,0 +1,21 @@
+# Render deployment configuration for the AI Study Assistant backend
+# Docs: https://render.com/docs/render-yaml-spec
+
+services:
+  - type: web
+    name: ai-study-assistant-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app.main:app -w 2 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false          # You must set this manually in Render dashboard (Supabase URL)
+      - key: SECRET_KEY
+        generateValue: true  # Render auto-generates a secure random value
+      - key: AI_ENABLED
+        value: false
+      - key: PYTHON_VERSION
+        value: 3.11.0
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
